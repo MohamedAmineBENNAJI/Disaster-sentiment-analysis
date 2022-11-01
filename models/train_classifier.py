@@ -48,7 +48,7 @@ def load_data_from_database(
     try:
 
         engine = create_engine(f"sqlite:///{database_path}")
-        df = pd.read_sql("encoded_messages", engine)
+        df = pd.read_sql("messages", engine)
 
         # Select the Input features and the output classes and define categories
         X = df["message"]
@@ -179,10 +179,11 @@ def main():
         # Define parameters for GridSearchCV fine-tuning
 
         params = {
-            "multioutput_classifier__estimator__max_depth": [3, 5, 7],
-            "multioutput_classifier__estimator__n_estimators": [50, 100, 200],
-            "multioutput_classifier__estimator__learning_rate": [0.1, 0.01, 0.05],
+            "multioutput_classifier__estimator__max_depth": [3, 5],
+            "multioutput_classifier__estimator__n_estimators": [100, 200],
+            "multioutput_classifier__estimator__learning_rate": [0.1, 0.01],
         }
+        #best_params = {'multioutput_classifier__estimator__learning_rate': 0.1, 'multioutput_classifier__estimator__max_depth': 5, 'multioutput_classifier__estimator__n_estimators': 200}
         # Building the model
         logging.info("Building the model")
         model = build_model(params=params)
