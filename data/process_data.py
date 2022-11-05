@@ -11,21 +11,21 @@ logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
 
-def load_data(messages_filepath: str, categories_filepath: str) -> pd.DataFrame:
+def load_data(messages_path: str, categories_path: str) -> pd.DataFrame:
     """This utility function is used to load messages and categories dataframes
         and merge them together.
 
     Args:
-        messages_filepath: Path of the messages file.
-        categories_filepath: Path of the file containing annotations.
+        messages_path: Path of the messages file.
+        categories_path: Path of the file containing annotations.
 
     Returns:
         data: Dataframe containing messages and categories.
     """
     try:
 
-        messages = pd.read_csv(messages_filepath)
-        categories = pd.read_csv(categories_filepath)
+        messages = pd.read_csv(messages_path)
+        categories = pd.read_csv(categories_path)
         data = pd.merge(messages, categories, on=("id"), how="inner")
         return data
 
@@ -48,7 +48,7 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
 
     # extract the column names from the first row
     row = categories_df.loc[0]
-    category_colnames = list(row.apply(lambda x: re.sub("-\d", "", x)))
+    category_colnames = list(row.apply(lambda x: re.sub(r"-\d", "", x)))
     # set the new dataframe columns
     categories_df.columns = category_colnames
     # extract the binary values from each column
@@ -65,14 +65,14 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
 
     # remove the duplicates
     number_of_duplicates = data.duplicated(keep="first").sum()
-    logging.info(f"The number of duplicated elements is {number_of_duplicates}")
+    logging.info(f"Number of duplicated elements {number_of_duplicates}")
 
     logging.info("Removing duplicates")
     # drop duplicates
     data = data.drop_duplicates()
     dupplicated_elements = data.duplicated(keep="first").sum()
     # checking the number of duplicates
-    logging.info(f"The number of duplicated elements is {dupplicated_elements}")
+    logging.info(f"Remaining duplicated elements {dupplicated_elements}")
 
     return data
 
@@ -92,19 +92,19 @@ def main():
     """Execute the ETL pipeline"""
     if len(sys.argv) == 4:
 
-        messages_filepath, categories_filepath, database_filepath = sys.argv[1:]
+        messages_path, categories_path, database_filepath = sys.argv[1:]
 
         logging.info(
             "Loading data...\n    MESSAGES: {}\n    CATEGORIES: {}".format(
-                messages_filepath, categories_filepath
+                messages_path, categories_path
             )
         )
-        df = load_data(messages_filepath, categories_filepath)
+        df = load_data(messages_path, categories_path)
 
         logging.info("Cleaning data...")
         df = clean_data(df)
 
-        logging.info("Saving data...\n    DATABASE: {}".format(database_filepath))
+        logging.info("Saving data...\n DATABASE: {}".format(database_filepath))
         save_data(df, database_filepath)
 
         logging.info("Cleaned data saved to database!")
@@ -121,5 +121,6 @@ def main():
 
 
 if __name__ == "__main__":
-    # execute the ETL pipeline to extract, transform and load data into a database
+    # execute the ETL pipeline to extract, transform and load data
+    # into a database
     main()
