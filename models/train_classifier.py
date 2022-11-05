@@ -1,10 +1,10 @@
-"""This module includes the code used to train the classifier for disaster messages."""
+"""This module includes the Machine learning pipeline for disaster messages."""
 # import libraries
 import logging
 import pickle
 import re
 import sys
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Tuple, Union
 
 import nltk
 import pandas as pd
@@ -32,8 +32,9 @@ logger.setLevel(logging.DEBUG)
 
 def load_data_from_database(
     database_path: str,
-) -> Tuple[pd.Series, pd.DataFrame, List[str]]:
-    """This utility function loads disaster data from a SQL database and return features and targets.
+) -> Union[Tuple[Any, Any, List[Any]], None]:
+    """This utility function loads disaster data from a SQL database
+        and return features and targets.
 
     Args:
         database_path: The path of the SQL database.
@@ -50,7 +51,8 @@ def load_data_from_database(
         engine = create_engine(f"sqlite:///{database_path}")
         df = pd.read_sql("messages", engine)
 
-        # Select the Input features and the output classes and define categories
+        # Select the Input features and the output classes
+        # and define categories
         X = df["message"]
         y = df.drop(columns=["message", "id", "genre", "original"])
         categories = list(y.columns)
@@ -59,6 +61,8 @@ def load_data_from_database(
 
     except FileNotFoundError:
         logging.error("Check the database path")
+
+        return None
 
 
 def tokenize(text: str) -> List[str]:
@@ -75,7 +79,7 @@ def tokenize(text: str) -> List[str]:
     # Tokenize text
     tokens = word_tokenize(text)
     # Remove stopwords
-    tokens = [t for t in tokens if not t in stopwords.words("english")]
+    tokens = [t for t in tokens if t not in stopwords.words("english")]
     # Lemmatize text
     lemmatizer = WordNetLemmatizer()
     clean_tokens = []
@@ -88,14 +92,17 @@ def tokenize(text: str) -> List[str]:
 
 
 def build_model(params: Dict[str, Any], verbose: bool = True):
-    """This function will prepare our Scikit-learn pipeline that will transform our data and fit it to targets.
+    """This function will prepare our Scikit-learn pipeline that will
+    transform our data and fit it to targets.
     Args:
-        params: A dictionary containing the parameters used to fine-tune the model with GridSearchCV algorithm.
+        params: A dictionary containing the parameters used to
+        fine-tune the model with GridSearchCV algorithm.
         verbose: A boolean used to control displaying the logs of training.
 
     Returns:
         cv_model: The cross-validation model.
     """
+    classifier = XGBClassifier(tree_method="hist", seed=42)
     pipeline = Pipeline(
         [
             (
@@ -108,10 +115,8 @@ def build_model(params: Dict[str, Any], verbose: bool = True):
                 ),
             ),
             (
-                "multioutput_classifier",
-                MultiOutputClassifier(
-                    XGBClassifier(tree_method="hist", nthread=4, seed=42)
-                ),
+                "clf",
+                MultiOutputClassifier(classifier),
             ),
         ]
     )
@@ -119,7 +124,7 @@ def build_model(params: Dict[str, Any], verbose: bool = True):
         pipeline,
         param_grid=params,
         verbose=1,
-        cv=5,
+        cv=3,
         refit=True,
         return_train_score=True,
     )
@@ -130,26 +135,27 @@ def build_model(params: Dict[str, Any], verbose: bool = True):
 def evaluate_model(
     model: Pipeline,
     test_features: pd.Series,
-    test_labels: pd.DataFrame,
+    y_test: pd.DataFrame,
     categories: List[str],
 ) -> None:
-    """This function evaluates the trained model and returns the confusion matrix and the classification report.
+    """This function evaluates the trained model and returns the
+    confusion matrix and the classification report.
 
     Args:
         model: The trained model.
         test_features: The evaluation messages..
-        test_labels: The evaluation labels.
+        y_test: The evaluation labels.
         categories: A list containing the used categories.
     """
     y_pred = model.predict(test_features)
     predictions_df = pd.DataFrame(y_pred, columns=categories)
     for i, col in enumerate(categories):
 
-        class_report = classification_report(test_labels[col], predictions_df[col])
-        logging.info(f"******Classifcation report for {col}******\n {class_report}")
+        class_report = classification_report(y_test[col], predictions_df[col])
+        logging.info(f"***Classifcation report for {col}***\n {class_report}")
 
 
-def save_model(model: Pipeline, model_filepath: str = "./classifier.pkl") -> None:
+def save_model(model: Pipeline, model_filepath: str) -> None:
     """This function is used to save the trained model.
 
     Args:
@@ -164,26 +170,37 @@ def save_model(model: Pipeline, model_filepath: str = "./classifier.pkl") -> Non
 
 def main():
     """This function executes the main training and evaluation pipelines."""
-    if len(sys.argv) == 3:
+    if len(sys.argv) == 4:
         logging.info("Starting the machine learning pipeline")
         # Load the data
-        database_path, model_filepath = sys.argv[1:]
+        database_path, model_filepath, fine_tune = sys.argv[1:]
+        fine_tune = eval(fine_tune)
         logging.info(f"Loading the data from Database {database_path}")
         X, y, category_names = load_data_from_database(database_path)
         # Split the data
-        logging.info(f"Splitting the data into train,test splits")
+        logging.info("Splitting the data into train,test splits")
         X_train, X_test, y_train, y_test = train_test_split(
             X, y, test_size=0.2, random_state=42
         )
-
         # Define parameters for GridSearchCV fine-tuning
+        if fine_tune:
+            print("Fine-tuning the model is enabled")
 
-        params = {
-            "multioutput_classifier__estimator__max_depth": [3, 5],
-            "multioutput_classifier__estimator__n_estimators": [100, 200],
-            "multioutput_classifier__estimator__learning_rate": [0.1, 0.01],
-        }
-        #best_params = {'multioutput_classifier__estimator__learning_rate': 0.1, 'multioutput_classifier__estimator__max_depth': 5, 'multioutput_classifier__estimator__n_estimators': 200}
+            params = {
+                "clf__estimator__max_depth": [3, 5],
+                "clf__estimator__n_estimators": [100, 200],
+                "clf__estimator__learning_rate": [0.1, 0.01],
+            }
+        else:
+            print("Fine-tuning the model is disabled")
+
+            # Use the best fine-tuning parameters without launching the
+            # fine-tuning process
+            params = {
+                "clf__estimator__learning_rate": [0.1],
+                "clf__estimator__max_depth": [5],
+                "clf__estimator__n_estimators": [200],
+            }
         # Building the model
         logging.info("Building the model")
         model = build_model(params=params)
@@ -205,10 +222,13 @@ def main():
 
     else:
         logging.info(
-            "Please provide the filepath of the disaster messages database "
-            "as the first argument and the filepath of the pickle file to "
-            "save the model to as the second argument. \n\nExample: python "
-            "train_classifier.py ../data/DisasterResponse.db classifier.pkl"
+            """Please provide the filepath of the disaster messages database
+            as the first argument and the filepath of the pickle file to
+            save the model to as the second argument and a boolean specifying
+            whether we are fine-tuning our model using GridSearchCV or we use
+            the best parameters directly
+            .\n\nExample: python train_classifier.py
+            ../data/DisasterResponse.db classifier.pkl False"""
         )
 
 
