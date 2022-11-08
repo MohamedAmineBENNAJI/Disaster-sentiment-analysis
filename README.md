@@ -44,42 +44,6 @@ and finally implemented a **Web application** that showcases some **visualizatio
     pip3 install -r requirements.txt
     ```
 
-- To run ETL pipeline that extracts, cleans and saves data in a SQL database use this command:
-    
-    ```
-    python3 data/process_data.py data/messages.csv data/categories.csv data/disaster_response.db    
-    ```
-where the system arguments correspond to:
-    - **messages_path**: Path of the CSV file containing the text messages.
-    - **categories_path**: Path of the CSV file containing the message categories.
-    - **database_filepath**: Path of the output database to save.  
-
-After the ETL pipeline is finished successfully, you'll find a file named **disaster_response.db** in the specified path while running the pipeline.
-
-
-- To run the Machine Learning pipeline that prepares, trains, evaluates and saves the classifier into a pickle file run:
-
-    ```
-    python3 models/train_classifier.py data/disaster_response.db models/classifier.pkl True
-    ```
-Where:
-    -**database_path**: Path of the SQL database containing the transmitted messages.
-    -**model_filepath**: Path of the output model to save.
-    -**fine_tune**: A boolean parameter controlling the model fine-tuning.
-
-**PS**: You can set **fine_tune** argument to **False** to use best parameters and avoid fine-tuning again.
-
-A file called **classifier.pkl** will be saved to the specified path while running the ML pipeline.
-
-
-3. Later use this command to run the web app showcasing our classifier and visualizations about the data.
-       
-    ```
-    python3 app/run.py
-    ```
-
-3. Go to http://0.0.0.0:3001/ from your local browser to access to the app.
-
 ### File Description <a name="file-desc"></a>
 
 * [**app**](app/): Flask Web App
@@ -87,7 +51,7 @@ A file called **classifier.pkl** will be saved to the specified path while runni
 
     * [**run.py**](app/run.py): Flask Web App main script.
 
-* [**data**](data/): Folder containing the data files, the ETL pipeline and            preprocessing steps.
+* [**data**](data/): Folder containing the data files, the ETL pipeline       and            preprocessing steps.
 
     * [**disaster_response.db**](data/disaster_response.db): The stored database after  ETL.
     * [**categories.csv**](data/categories.csv): The dataset including message categories.
@@ -126,6 +90,20 @@ The process of data cleaning is based on
 5. Drop the duplicates from the **messages** column.
 6. Export the final clean dataframe into and save it as a table in a **SQL** database.
 
+- To run ETL pipeline that extracts, cleans and saves data in a SQL database use this command:
+    
+    ```
+    python3 data/process_data.py data/messages.csv data/categories.csv data/disaster_response.db    
+    ```
+where the system arguments correspond to:
+
+- **messages_path**: Path of the CSV file containing the text messages.
+- **categories_path**: Path of the CSV file containing the message categories.
+- **database_filepath**: Path of the output database to save.  
+
+After the ETL pipeline is finished successfully, you'll find a file named **disaster_response.db** in the specified path while running the pipeline.
+
+
 ### Modeling Process <a name="model"></a>
 
 1. Load the **messages** table from the **SQL** database and select **categories**, **training features** and the **target columns**.
@@ -141,6 +119,23 @@ The process of data cleaning is based on
 
 <br>
 
+- To run the Machine Learning pipeline that prepares, trains, evaluates and saves the classifier into a pickle file run:
+
+    ```
+    python3 models/train_classifier.py data/disaster_response.db models/classifier.pkl True
+    ```
+Where:
+
+-**database_path**: Path of the SQL database containing the transmitted messages.
+-**model_filepath**: Path of the output model to save.
+-**fine_tune**: A boolean parameter controlling the model fine-tuning.
+
+**PS**: You can set **fine_tune** argument to **False** to use best parameters and avoid fine-tuning again.
+
+A file called **classifier.pkl** will be saved to the specified path while running the ML pipeline.
+
+
+
 ### Model evaluation <a name="result"></a>
 
 We evaluated our model trained with 5-folds cross validation splits using [**classification report**](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.classification_report.html) for each **category**.
@@ -153,6 +148,15 @@ This figure illustrates the evaluation results for the column named **related**.
 
 
 ### Screenshots <a name="screenshots"></a>
+
+- Later, you can use this command to run the web app showcasing our classifier and visualizations about the data.
+       
+    ```
+    python3 app/run.py
+    ```
+
+- Go to http://0.0.0.0:3001/ from your local browser to access to the app.
+ 
 
 These are some figures illustrating the home page of our web application alongside with 
 a result of multi-label classification.
