@@ -69,7 +69,7 @@ and finally implemented a **Web application** that showcases some **visualizatio
         Notebook contains ETL Pipeline.
     
 
-* [**img**](img/): Folder including screenshots and necessary images.
+* [**figures**](figures/): Folder including screenshots and necessary images.
 
 * [**requirements.txt**](/requirements.txt): The project requirements file.
 
