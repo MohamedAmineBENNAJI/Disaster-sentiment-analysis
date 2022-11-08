@@ -1,13 +1,15 @@
 import json
-
-import joblib
-import pandas as pd
 import plotly
-from flask import Flask, jsonify, render_template, request
+import pandas as pd
+import numpy as np
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
-from plotly.graph_objs import Bar
+
+from flask import Flask
+from flask import render_template, request
+import joblib
 from sqlalchemy import create_engine
+
 
 app = Flask(__name__)
 
@@ -39,20 +41,77 @@ def index():
 
     # extract data needed for visuals
     # TODO: Below is an example - modify to extract data for your own visuals
-    genre_counts = df.groupby("genre").count()["message"]
-    genre_names = list(genre_counts.index)
+    n_messages = df.groupby("genre").count()["message"]
+    count_percentage = 100 * n_messages / n_messages.sum()
+    genres = list(n_messages.index)
+    messages_per_category = df.drop(
+        ["id", "message", "original", "genre"], axis=1
+    ).sum()
+    messages_per_category = messages_per_category.sort_values(ascending=False)
+    categories = list(messages_per_category.index)
+    df["text_len"] = df.message.str.len()
+    n_messages, bins = np.histogram(df.text_len, bins=range(0, 1000, 100))
+    bins = bins[:-1] + bins[1:]
 
     # create visuals
-    # TODO: Below is an example - modify to create your own visuals
     graphs = [
         {
-            "data": [Bar(x=genre_names, y=genre_counts)],
+            "data": [
+                {
+                    "type": "pie",
+                    "uid": "f4de1f",
+                    "hole": 0.4,
+                    "name": "Genre",
+                    "pull": 0,
+                    "domain": {"x": count_percentage, "y": genres},
+                    "textinfo": "label+value",
+                    "hoverinfo": "all",
+                    "labels": genres,
+                    "values": n_messages,
+                }
+            ],
+            "layout": {"title": "Number of messages by genre"},
+        },
+        {
+            "data": [
+                {
+                    "type": "bar",
+                    "x": bins,
+                    "y": n_messages,
+                    "marker": {"color": "#7fc97f"},
+                }
+            ],
             "layout": {
-                "title": "Distribution of Message Genres",
+                "title": "Message distribution by length",
+                "yaxis": {"title": "Number of messages"},
+                "xaxis": {"title": "Message length"},
+                "barmode": "group",
+            },
+        },
+        {
+            "data": [
+                {
+                    "type": "bar",
+                    "x": categories,
+                    "y": messages_per_category,
+                    "marker": dict(
+                        size=36,
+                        # set color equal to a variable
+                        color=np.random.randn(256),
+                        # one of plotly colorscales
+                        colorscale="hot",
+                        # enable color scale
+                        showscale=False,
+                    ),
+                }
+            ],
+            "layout": {
+                "title": "Number of messages by category",
                 "yaxis": {"title": "Count"},
                 "xaxis": {"title": "Genre"},
+                "barmode": "group",
             },
-        }
+        },
     ]
 
     # encode plotly graphs in JSON
