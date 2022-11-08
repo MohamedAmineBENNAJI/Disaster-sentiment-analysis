@@ -127,7 +127,9 @@ After the ETL pipeline is finished successfully, you'll find a file named **disa
 Where:
 
 -**database_path**: Path of the SQL database containing the transmitted messages.
+
 -**model_filepath**: Path of the output model to save.
+
 -**fine_tune**: A boolean parameter controlling the model fine-tuning.
 
 **PS**: You can set **fine_tune** argument to **False** to use best parameters and avoid fine-tuning again.
