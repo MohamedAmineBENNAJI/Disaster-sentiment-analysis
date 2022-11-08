@@ -67,8 +67,7 @@ and finally implemented a **Web application** that showcases some **visualizatio
 
     * [**ETL Pipeline Preparation.ipynb**](notebooks/ETL%20Pipeline%20Preparation.ipynb): 
         Notebook contains ETL Pipeline.
-    * [**ML Pipeline Preparation.ipynb**](notebooks/ML%20Pipeline%20Preparation.ipynb): 
-    Notebook contains ML Pipeline.
+    
 
 * [**img**](img/): Folder including screenshots and necessary images.
 
