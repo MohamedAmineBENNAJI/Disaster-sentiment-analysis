@@ -187,3 +187,8 @@ The dataset is so imbalanced across all the categories which affects the behavio
 The model will not generalize well for imbalanced classes with fewer samples. We can work on reducing the effect by using some  [**techniques**](https://towardsdatascience.com/5-techniques-to-work-with-imbalanced-data-in-machine-learning-80836d45d30c) that deal with datasets imbalance.
 
 For some categories, we should focus on **recall** as all the categories has the same precision.
+
+### Acknowledgements
+
+Many thanks to **Udacity** for the great content that helped me implement this project and also for **Appen** for providing the dataset we used to build a complete disaster response pipeline from ETL to classification and deployment.
+
