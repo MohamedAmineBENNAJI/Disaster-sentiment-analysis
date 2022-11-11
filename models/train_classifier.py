@@ -124,7 +124,7 @@ def build_model(params: Dict[str, Any], verbose: bool = True):
         pipeline,
         param_grid=params,
         verbose=1,
-        cv=3,
+        cv=5,
         refit=True,
         return_train_score=True,
     )
@@ -149,10 +149,16 @@ def evaluate_model(
     """
     y_pred = model.predict(test_features)
     predictions_df = pd.DataFrame(y_pred, columns=categories)
+    report = []
     for i, col in enumerate(categories):
 
-        class_report = classification_report(y_test[col], predictions_df[col])
+        class_report = classification_report(
+            y_test[col], predictions_df[col], output_dict=True
+        )
         logging.info(f"***Classifcation report for {col}***\n {class_report}")
+        report.append(pd.DataFrame.from_dict(class_report))
+    classification_report_df = pd.concat(report)
+    classification_report_df.to_csv("classification_report.csv")
 
 
 def save_model(model: Pipeline, model_filepath: str) -> None:
