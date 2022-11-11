@@ -26,7 +26,7 @@ To summarize, the **classification** of this textual data is so beneficial in or
 6. [Model evaluation](#result)
 7. [Screenshots](#screenshots)
 8. [Effect of Imbalance](#effect)
-9. [Acknowledgments] (#acknowlegdments)
+9. [Acknowledgments](#acknowlegdments)
 <br>
 
 ### Overview: <a name="overview"></a>
