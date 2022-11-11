@@ -1,4 +1,6 @@
 # Disaster-response-analysis
+<br>
+
 <p align="center">
 
 <img src="https://i.ytimg.com/vi/vjVUkhDhcxU/maxresdefault.jpg" width=640 height=360>
@@ -11,8 +13,10 @@ During a global crisis, social media plays a crucial role in transmitting the da
 
 To summarize, the **classification** of this textual data is so beneficial in order to make the transmission of information easier, faster and more efficient.
  
+<br>
 
 # Table of Contents
+<br>
 
 1. [Overview](#overview)
 2. [Installation:](#installation)
@@ -22,13 +26,18 @@ To summarize, the **classification** of this textual data is so beneficial in or
 6. [Model evaluation](#result)
 7. [Screenshots](#screenshots)
 8. [Effect of Imbalance](#effect)
+9. [Acknowledgments] (#acknowlegdments)
+<br>
 
 ### Overview: <a name="overview"></a>
+<br>
 
 In this project, I worked on analyzing text data exchanged during a disaster, worked on building a model to **classify** the messages into **36** categories to make it easier to transmit information to the right entity.
 and finally implemented a **Web application** that showcases some **visualizations** about the data and the **multi-label-classification** task.
+<br>
 
 ### Installation:  <a name="installation"></a>
+<br>
 
 1. First you need to clone the repository to your local machine using this command:
 
@@ -43,8 +52,10 @@ and finally implemented a **Web application** that showcases some **visualizatio
     ```
     pip3 install -r requirements.txt
     ```
+<br>
 
 ### File Description <a name="file-desc"></a>
+<br>
 
 * [**app**](app/): Flask Web App
     * [**templates**](app/templates): Folder including HTML templates.
@@ -73,12 +84,17 @@ and finally implemented a **Web application** that showcases some **visualizatio
 
 * [**requirements.txt**](/requirements.txt): The project requirements file.
 
+<br>
 
 ### Dataset <a name="data"></a>
+<br>
+
 The disaster data was taken from [Appen](https://appen.com/). It has two main files messages.csv and categories.csv
 containing the exchanged messages and their annotations.
+<br>
 
 #### Data Cleaning
+<br>
 
 The process of data cleaning is based on 
 
@@ -102,8 +118,10 @@ where the system arguments correspond to:
 
 After the ETL pipeline is finished successfully, you'll find a file named **disaster_response.db** in the specified path while running the pipeline.
 
+<br>
 
 ### Modeling Process <a name="model"></a>
+<br>
 
 1. Load the **messages** table from the **SQL** database and select **categories**, **training features** and the **target columns**.
 2. Clean and tokenize text messages after removing ponctuations, capital letters, stop words and perform the lemmatization of text messages to get the root of the words.
@@ -136,8 +154,10 @@ Where:
 A file called **classifier.pkl** will be saved to the specified path while running the ML pipeline.
 
 
+<br>
 
 ### Model evaluation <a name="result"></a>
+<br>
 
 We evaluated our model trained with 5-folds cross validation splits using [**classification report**](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.classification_report.html) for each **category**.
 
@@ -147,8 +167,10 @@ This figure illustrates the evaluation results for the column named **related**.
 <img src="figures/results_example.png">
 </p>
 
+<br>
 
 ### Screenshots <a name="screenshots"></a>
+<br>
 
 - Later, you can use this command to run the web app showcasing our classifier and visualizations about the data.
        
@@ -180,10 +202,24 @@ a result of multi-label classification.
 <img src="figures/prediction_results.png">
 </p>
 
+<br>
 
 ### Effect of Imbalance: <a name="effect"></a>
+<br>
+
 The dataset is so imbalanced across all the categories which affects the behaviour of our classifier and causes some missing predictions.
 
 The model will not generalize well for imbalanced classes with fewer samples. We can work on reducing the effect by using some  [**techniques**](https://towardsdatascience.com/5-techniques-to-work-with-imbalanced-data-in-machine-learning-80836d45d30c) that deal with datasets imbalance.
 
 For some categories, we should focus on **recall** as all the categories has the same precision.
+
+
+<br>
+
+### Acknowledgments: <a name="acknowledgments"></a>
+
+<br>
+
+This project is part of the [**Udacity Data Science Nanodegree program**](https://www.udacity.com/course/data-scientist-nanodegree--nd025?utm_source=gsem_brand&utm_medium=ads_r&utm_campaign=12949497746_c_individuals&utm_term=130336578188&utm_keyword=data%20scientist%20nanodegree_e&gclid=Cj0KCQiAgribBhDkARIsAASA5bvkUHaXzaZyn66isK3HJReKaCFeYsvd6tCYfnhLYGFRGuv1KEiW69kaAh9kEALw_wcB) that is really helpful and practical. Also, many thanks go to [**Appen**](https://appen.com/) for providing the needed data to perform this case study.
+
+Feel free to use this code, sharing it with the community and contact me if there's anything related to this project.
