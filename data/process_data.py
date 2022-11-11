@@ -56,7 +56,7 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
         # set each value to be the last character of the string
         categories_df[column] = categories_df[column].astype(str).str[-1]
         # Convert all the categories to binary values
-        categories[column] = categories[column].str.replace("2", "1")
+        categories_df[column] = categories_df[column].str.replace("2", "1")
         # convert column from string to numeric
         categories_df[column] = pd.to_numeric(categories_df[column])
     # drop the original categories column from `df`
