@@ -26,7 +26,7 @@ To summarize, the **classification** of this textual data is so beneficial in or
 6. [Model evaluation](#result)
 7. [Screenshots](#screenshots)
 8. [Effect of Imbalance](#effect)
-9. [Acknowledgments](#acknowlegdments)
+9. [Acknowledgments](#acknowledgments)
 <br>
 
 ### Overview: <a name="overview"></a>
@@ -216,7 +216,7 @@ For some categories, we should focus on **recall** as all the categories has the
 
 <br>
 
-### Acknowledgments: <a name="acknowledgments"></a>
+### Acknowledgments: <a name="acknowlegdments"></a>
 
 <br>
 
