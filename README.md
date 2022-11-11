@@ -216,7 +216,7 @@ For some categories, we should focus on **recall** as all the categories has the
 
 <br>
 
-### Acknowledgments: <a name="acknowlegdments"></a>
+### Acknowledgments: <a name="acknowledgments"></a>
 
 <br>
 
